@@ -4,14 +4,24 @@ const stopButton = document.querySelector('[data-stop]');
 const bodyElement = document.body;
 let timerId = null;
 
+function disableButtons(start, stop) {
+    startButton.disabled = start;
+    stopButton.disabled = stop;
+}
+
 startButton.addEventListener('click', () => {
-    timerId = setInterval(() => bodyElement.style.backgroundColor = getRandomHexColor(), 1000);
-    stopButton.disabled = false;
-    startButton.disabled = true;
+    if (!timerId) {
+        timerId = setInterval(() => {
+            bodyElement.style.backgroundColor = getRandomHexColor();
+        }, 1000);
+        disableButtons(true, false);
+    }
 });
 
 stopButton.addEventListener('click', () => {
-    clearInterval(timerId);
-    stopButton.disabled = true;
-    startButton.disabled = false;
+    if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+        disableButtons(false, true);
+    }
 });

@@ -25,28 +25,17 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-const options = {
-  enableTime: true,
-  time_24hr: true,
-  defaultDate: new Date(),
-  minuteIncrement: 1,
-  onClose(selectedDates) {
-    if (selectedDates[0] < options.defaultDate) {
-      Notiflix.Notify.warning('Select a date from the future!');
-      return;
-    }
-    startButton.removeAttribute('disabled');
-    selectedDate = selectedDates[0].getTime();
-  },
-};
-
-function addLeadingZero() {
-  const difference = selectedDate - new Date().getTime();
-  const { days, hours, minutes, seconds } = convertMs(difference);
+function updateTimerDisplay(days, hours, minutes, seconds) {
   daysElement.textContent = String(days).padStart(2, '0');
   hoursElement.textContent = String(hours).padStart(2, '0');
   minutesElement.textContent = String(minutes).padStart(2, '0');
   secondsElement.textContent = String(seconds).padStart(2, '0');
+}
+
+function addLeadingZero() {
+  const difference = selectedDate - new Date().getTime();
+  const { days, hours, minutes, seconds } = convertMs(difference);
+  updateTimerDisplay(days, hours, minutes, seconds);
 }
 
 startButton.addEventListener('click', () => {
@@ -55,16 +44,28 @@ startButton.addEventListener('click', () => {
     startButton.disabled = true;
     addLeadingZero();
 
-    if (
-      daysElement.textContent === '00' &&
-      hoursElement.textContent === '00' &&
-      minutesElement.textContent === '00' &&
-      secondsElement.textContent === '00'
-    ) {
+    const remainingTimeMs = selectedDate - new Date().getTime();
+    if (remainingTimeMs <= 0) {
       clearInterval(timer);
       Notiflix.Notify.failure('Your time has flown by!');
     }
   }, 1000);
 });
 
-flatpickr('#datetime-picker', { ...options });
+const options = {
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
+  onClose(selectedDates) {
+    if (selectedDates[0] < options.defaultDate) {
+      Notiflix.Notify.warning('Select a date from the future!');
+      startButton.setAttribute('disabled', '');
+      return;
+    }
+    startButton.removeAttribute('disabled');
+    selectedDate = selectedDates[0].getTime();
+  },
+};
+
+flatpickr('#datetime-picker', options);

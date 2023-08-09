@@ -5,7 +5,10 @@ formRef.addEventListener('submit', onSubmitForm);
 function onSubmitForm(e) {
   e.preventDefault();
 
+  const formRef = e.target;
+
   let delay = Number(formRef.delay.value);
+  let step = Number(formRef.step.value);
 
   for (let i = 1; i <= formRef.amount.value; i += 1) {
     createPromise(i, delay)
@@ -15,7 +18,8 @@ function onSubmitForm(e) {
       .catch(({ position, delay }) => {
         console.log(`❌ Rejected promise ${position} in ${delay}ms`);
       });
-    delay += Number(formRef.step.value);
+
+    delay += step;
   }
   formRef.reset();
 }
