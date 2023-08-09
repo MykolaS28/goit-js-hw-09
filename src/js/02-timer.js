@@ -59,12 +59,13 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     if (selectedDates[0] < options.defaultDate) {
-      Notiflix.Notify.warning('Select a date from the future!');
-      startButton.setAttribute('disabled', '');
-      return;
+      Notiflix.Notify.warning('Виберіть дату у майбутньому!');
+      startButton.disabled = true;
+    } else {
+      Notiflix.Notify.success('Таймер розпочато!');
+      startButton.disabled = false;
+      selectedDate = selectedDates[0].getTime();
     }
-    startButton.removeAttribute('disabled');
-    selectedDate = selectedDates[0].getTime();
   },
 };
 
